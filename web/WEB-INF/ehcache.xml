@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+
+    <cache name="usuarios" maxElementsInMemory="10000" eternal="true"
+        overflowToDisk="false" />
+    <cache name="hoteles" maxElementsInMemory="10000" eternal="true"
+        overflowToDisk="false" />
+    <cache name="reservas" maxElementsInMemory="10000" eternal="true"
+        overflowToDisk="false" />
+    <cache name="operadores" maxElementsInMemory="10000" eternal="true"
+        overflowToDisk="false" />
+</ehcache>
