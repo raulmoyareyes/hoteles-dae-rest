@@ -5,6 +5,7 @@ import es.ujaen.dae.gabri_raul.hoteles.modelos.Hotel;
 import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,9 @@ public class RecursoHotel {
     BeanOperador operador;
     
     @GET
-    @Path("/{dni}")
+    @Path("/{nombre}")
     @Produces("application/json; charset=utf-8")
-    public Map<String, Hotel> consultaNombreHotel(String nombre) {
+    public Map<String, Hotel> consultaNombreHotel(@PathParam("nombre") String nombre) {
         return operador.consultaNombreHotel(nombre);
     }
 }
