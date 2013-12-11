@@ -1,13 +1,19 @@
 package es.ujaen.dae.gabri_raul.hoteles.recursos;
 
 import es.ujaen.dae.gabri_raul.hoteles.beans.BeanOperador;
+import es.ujaen.dae.gabri_raul.hoteles.excepciones.ReservaErrorCambiarUsuario;
+import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorActualizar;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorDatos;
+import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorEliminar;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorPersistir;
+import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioNoEncontrado;
 import es.ujaen.dae.gabri_raul.hoteles.modelos.Usuario;
 import java.net.URI;
 import java.util.Map;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -49,9 +55,9 @@ public class RecursoUsuario {
     }
     
     @PUT
-    @Path("/nuevo/{dni}")
+    @Path("/{dni}")
     @Consumes("application/json")
-    public Response crearUsuario (@PathParam("dni") String dni, Usuario usuario){
+    public Response altaUsuario (@PathParam("dni") String dni, Usuario usuario){
         if (usuario == null){
             return Response.status(Status.BAD_REQUEST).build();
         }
@@ -67,4 +73,39 @@ public class RecursoUsuario {
         return Response.created(URI.create("")).build();
     }
     
+    @DELETE
+    @Path("/{dni}")
+    //@Consumes("application/json")
+    public Response bajaUsuario (@PathParam("dni") String dni){
+        Usuario usuario = operador.obtenerUsuario(dni);
+        if(usuario == null){
+            return Response.status(Status.NOT_FOUND).build();
+        }else{
+            try{
+                operador.bajaUsuario(dni);
+            }catch (UsuarioErrorEliminar | UsuarioNoEncontrado | ReservaErrorCambiarUsuario e){
+                return Response.status(Status.NOT_ACCEPTABLE).build();
+            }
+            return Response.status(Status.ACCEPTED).build();
+        }
+    }
+    
+    @POST
+    @Path("/{dni}")
+    @Consumes("application/json")
+    public Response modificarUsuario (@PathParam("dni") String dni, Usuario usuario){
+        if (usuario == null){
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        
+        if(operador.obtenerUsuario(dni) == null){
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        try{
+        operador.modificarUsuario(usuario.getNombre(), usuario.getDni(), usuario.getDireccion());
+        }catch(UsuarioErrorActualizar e){
+            return Response.status(Status.NOT_ACCEPTABLE).build();
+        }
+        return Response.status(Status.ACCEPTED).build();
+    }
 }
