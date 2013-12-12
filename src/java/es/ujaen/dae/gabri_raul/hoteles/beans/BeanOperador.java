@@ -264,4 +264,14 @@ public class BeanOperador {
     public Map<Integer, Reserva> listadoReservas() {
         return reservaDAO.listar();
     }
+    
+    /**
+     * Devuelve el hotel con el nombre indicado.
+     *
+     * @param nombre
+     * @return Devuelve el usuario, null si no es encontrado.
+     */
+    public Hotel obtenerHotel(String nombre) {
+        return hotelDAO.buscar(nombre);
+    }
 }
