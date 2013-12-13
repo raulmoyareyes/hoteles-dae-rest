@@ -55,8 +55,18 @@ public class RecursoHotel {
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
-    public Map<String, Hotel> listaHoteles() {
-        return administrador.listaHoteles();
+    public Response listaHoteles(@QueryParam("nombre") String nombre) {
+        if(nombre==null)
+        {
+            return Response.ok(administrador.listaHoteles()).build();
+        }else{
+            Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
+            if(hoteles != null){
+                return Response.ok(hoteles).build();
+            }else{
+                return Response.status(Status.NOT_FOUND).build();
+            }
+        }
     }
     
     @PUT
@@ -114,18 +124,18 @@ public class RecursoHotel {
         return Response.status(Status.ACCEPTED).build();
     }
     
-    @GET
-    @Path("/busqueda")
-    @Produces("application/json; charset=utf-8")
-    public Response consultaNombreHotel(@QueryParam("nombre") String nombre) {
-        
-        Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
-        if(hoteles != null){
-            return Response.ok(hoteles).build();
-        }else{
-            return Response.status(Status.NOT_FOUND).build();
-        }
-    }
+//    @GET
+//    @Path("/busqueda")
+//    @Produces("application/json; charset=utf-8")
+//    public Response consultaNombreHotel(@QueryParam("nombre") String nombre) {
+//        
+//        Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
+//        if(hoteles != null){
+//            return Response.ok(hoteles).build();
+//        }else{
+//            return Response.status(Status.NOT_FOUND).build();
+//        }
+//    }
     
     
 }
