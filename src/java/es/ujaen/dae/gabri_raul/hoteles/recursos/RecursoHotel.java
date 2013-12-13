@@ -18,6 +18,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,19 @@ public class RecursoHotel {
             return Response.status(Status.NOT_ACCEPTABLE).build();
         }
         return Response.status(Status.ACCEPTED).build();
+    }
+    
+    @GET
+    @Path("/busqueda")
+    @Produces("application/json; charset=utf-8")
+    public Response consultaNombreHotel(@QueryParam("nombre") String nombre) {
+        
+        Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
+        if(hoteles != null){
+            return Response.ok(hoteles).build();
+        }else{
+            return Response.status(Status.NOT_FOUND).build();
+        }
     }
     
     
