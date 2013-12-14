@@ -72,11 +72,11 @@ public class Administrador extends HttpServlet {
                 } catch (OperadorErrorPersistir ex) {
 
                 }
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
 
             } else if (request.getParameter("cancelar") != null) {
 
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
 
             } else {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/administrador/operadores/nuevo.jsp");
@@ -99,10 +99,10 @@ public class Administrador extends HttpServlet {
                     System.out.println("No se ha podido modificar el operador");
                 }
 
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
 
             } else if (request.getParameter("cancelar") != null) {
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
             } else {
                 Operador operador = beanAdministrador.obtenerOperador((String) request.getParameter("cif"));
                 request.setAttribute("operador", operador);
@@ -116,7 +116,7 @@ public class Administrador extends HttpServlet {
                 System.out.println("No se ha podido eliminar el operador");
             }
 
-            response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+            response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
 
         }else if (action.equals("/listadohoteles")){
             
@@ -145,11 +145,11 @@ public class Administrador extends HttpServlet {
                 } catch (HotelErrorPersistir ex) {
 
                 }
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadohoteles");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadohoteles");
 
             } else if (request.getParameter("cancelar") != null) {
 
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadohoteles");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadohoteles");
 
             } else {
                 RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/administrador/hoteles/nuevo.jsp");
@@ -185,10 +185,10 @@ public class Administrador extends HttpServlet {
                     System.out.println("No se ha podido modificar el hotel");
                 }
 
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadohoteles");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadohoteles");
 
             } else if (request.getParameter("cancelar") != null) {
-                response.sendRedirect("/Hoteles-DAE-WS/administrador/listadohoteles");
+                response.sendRedirect("/Hoteles-DAE-REST/administrador/listadohoteles");
             } else {
                 Hotel hotel = beanAdministrador.obtenerHotel((String) request.getParameter("nombre"));
                 request.setAttribute("hotel", hotel);
@@ -202,10 +202,10 @@ public class Administrador extends HttpServlet {
                 System.out.println("No se ha podido eliminar el hotel");
             }
 
-            response.sendRedirect("/Hoteles-DAE-WS/administrador/listadohoteles");
+            response.sendRedirect("/Hoteles-DAE-REST/administrador/listadohoteles");
 
         }else {
-            response.sendRedirect("/Hoteles-DAE-WS/administrador/listadooperadores");
+            response.sendRedirect("/Hoteles-DAE-REST/administrador/listadooperadores");
         }
 
     }

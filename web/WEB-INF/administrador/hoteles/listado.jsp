@@ -8,7 +8,7 @@
 <section class="panel panel-default">
     <div class="panel-heading">
         <h1>Listado de hoteles</h1>
-        <a class="pull-right btn btn-success" href="/Hoteles-DAE-WS/administrador/nuevohotel">Nuevo hotel</a>
+        <a class="pull-right btn btn-success" href="/Hoteles-DAE-REST/administrador/nuevohotel">Nuevo hotel</a>
         <div class="clearfix"></div>
     </div>
     <div class="panel-body">
@@ -34,8 +34,8 @@
                         <td>${h.value.direccion}</td>
                         <td>
                             <!--<a href="#modalElimina" data-toggle="modal" class="elimina"><i class="icon-remove"></i></a>-->
-                            <a href="/Hoteles-DAE-WS/administrador/eliminarhotel?nombre=${h.value.nombre}"><i class="glyphicon glyphicon-remove"></i></a>
-                            <a href="/Hoteles-DAE-WS/administrador/modificarhotel?nombre=${h.value.nombre}"><i class="glyphicon glyphicon-pencil"></i></a>
+                            <a href="/Hoteles-DAE-REST/administrador/eliminarhotel?nombre=${h.value.nombre}"><i class="glyphicon glyphicon-remove"></i></a>
+                            <a href="/Hoteles-DAE-REST/administrador/modificarhotel?nombre=${h.value.nombre}"><i class="glyphicon glyphicon-pencil"></i></a>
                         </td>
                     </tr>
                 </c:forEach>
