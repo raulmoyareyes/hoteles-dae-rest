@@ -9,6 +9,8 @@ import es.ujaen.dae.gabri_raul.hoteles.excepciones.HotelErrorPersistir;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.HotelNoEncontrado;
 import es.ujaen.dae.gabri_raul.hoteles.modelos.Hotel;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -24,118 +26,109 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Recurso REST para el Operador
  *
- * @author Raúl &  Gabri
+ * @author Raúl & Gabri
  */
 @Path("/hoteles")
 @Component(value = "recursoHotel")
 public class RecursoHotel {
-    
+
     @Autowired
     BeanOperador operador;
-    
+
     @Autowired
     BeanAdministrador administrador;
-    
+
     @GET
     @Path("/{nombre}")
     @Produces("application/json; charset=utf-8")
     public Response obtenerHotel(@PathParam("nombre") String nombre) {
         Hotel hotel = operador.obtenerHotel(nombre);
-        if(hotel != null){
+        if (hotel != null) {
             return Response.ok(hotel).build();
-        }else{
+        } else {
             return Response.status(Status.NOT_FOUND).build();
         }
     }
-    
+
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
     public Response listaHoteles(@QueryParam("nombre") String nombre) {
-        if(nombre==null)
-        {
+        if (nombre == null) {
             return Response.ok(administrador.listaHoteles()).build();
-        }else{
+        } else {
             Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
-            if(hoteles != null){
+            if (hoteles != null) {
                 return Response.ok(hoteles).build();
-            }else{
+            } else {
                 return Response.status(Status.NOT_FOUND).build();
             }
         }
     }
-    
+
     @PUT
     @Path("/{nombre}")
     @Consumes("application/json")
-    public Response altaHotel (@PathParam("nombre") String nombre, Hotel hotel){
-        if (hotel == null){
+    public Response altaHotel(@PathParam("nombre") String nombre, Hotel hotel) {
+        if (hotel == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }
-        
-        if(administrador.obtenerHotel(nombre) != null){
+
+        if (administrador.obtenerHotel(nombre) != null) {
             return Response.status(Status.CONFLICT).build();
         }
-        try{
-        administrador.altaHotel(hotel);
-        }catch(HotelErrorDatos | HotelErrorPersistir e){
+        try {
+            administrador.altaHotel(hotel);
+        } catch (HotelErrorDatos | HotelErrorPersistir e) {
             return Response.status(Status.NOT_ACCEPTABLE).build();
         }
         return Response.created(URI.create("")).build();
     }
-    
+
     @DELETE
     @Path("/{nombre}")
     //@Consumes("application/json")
-    public Response bajaHotel (@PathParam("nombre") String nombre){
+    public Response bajaHotel(@PathParam("nombre") String nombre) {
         Hotel hotel = administrador.obtenerHotel(nombre);
-        if(hotel == null){
+        if (hotel == null) {
             return Response.status(Status.NOT_FOUND).build();
-        }else{
-            try{
+        } else {
+            try {
                 administrador.bajaHotel(nombre);
-            }catch (HotelErrorEliminar | HotelNoEncontrado e){
+            } catch (HotelErrorEliminar | HotelNoEncontrado e) {
                 return Response.status(Status.NOT_ACCEPTABLE).build();
             }
             return Response.status(Status.ACCEPTED).build();
         }
     }
-    
+
     @POST
     @Path("/{nombre}")
     @Consumes("application/json")
-    public Response modificarHotel (@PathParam("nombre") String nombre, Hotel hotel){
-        if (hotel == null){
+    public Response modificarHotel(@PathParam("nombre") String nombre, Hotel hotel) {
+        if (hotel == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }
-        
-        if(administrador.obtenerHotel(nombre) == null){
+
+        if (administrador.obtenerHotel(nombre) == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        try{
-        administrador.modificarHotel(hotel);
-        }catch(HotelErrorActualizar e){
+        try {
+            administrador.modificarHotel(hotel);
+        } catch (HotelErrorActualizar e) {
             return Response.status(Status.NOT_ACCEPTABLE).build();
         }
         return Response.status(Status.ACCEPTED).build();
     }
-    
-//    @GET
-//    @Path("/busqueda")
-//    @Produces("application/json; charset=utf-8")
-//    public Response consultaNombreHotel(@QueryParam("nombre") String nombre) {
-//        
-//        Map<String, Hotel> hoteles = operador.consultaNombreHotel(nombre);
-//        if(hoteles != null){
-//            return Response.ok(hoteles).build();
-//        }else{
-//            return Response.status(Status.NOT_FOUND).build();
-//        }
-//    }
-    
-    
+
+    @GET
+    @Path("/busqueda")
+    @Produces("application/json; charset=utf-8")
+    public List<Hotel> consultaNombreHotel(@QueryParam("nombre") String nombre) {
+        return new ArrayList(operador.consultaNombreHotel(nombre).values());
+    }
+
 }
