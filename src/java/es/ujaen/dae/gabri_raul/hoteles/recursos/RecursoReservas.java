@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package es.ujaen.dae.gabri_raul.hoteles.recursos;
 
 import es.ujaen.dae.gabri_raul.hoteles.beans.BeanOperador;
@@ -17,6 +16,8 @@ import es.ujaen.dae.gabri_raul.hoteles.excepciones.ReservaNoPosible;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioNoEncontrado;
 import es.ujaen.dae.gabri_raul.hoteles.modelos.Reserva;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,81 +35,78 @@ import org.springframework.stereotype.Component;
 /**
  * Recurso REST para el Operador
  *
- * @author Raúl &  Gabri
+ * @author Raúl & Gabri
  */
-@Path("/reservas}")
+@Path("/reservas")
 @Component(value = "recursoReservas")
 public class RecursoReservas {
+
     @Autowired
     BeanOperador operador;
-    
-    
+
     @GET
     @Path("/{id}")
     @Produces("application/json; charset=utf-8")
     public Response obtenerReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
-        if(reserva != null){
+        if (reserva != null) {
             return Response.ok(reserva).build();
-        }else{
+        } else {
             return Response.status(Status.NOT_FOUND).build();
         }
     }
-    
+
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
-    public Response listadoReservas() {
-            return Response.ok(operador.listadoReservas()).build();
+    public List<Reserva> listadoReservas() {
+        return new ArrayList(operador.listadoReservas().values());
     }
-    
+
     @PUT
     @Path("")
     @Consumes("application/json")
-    public Response crearReserva (Reserva reserva, @QueryParam("dni") String dni, @QueryParam("hotel") String hotel){
-        if (reserva == null || dni == null || hotel == null){
-            return Response.status(Status.BAD_REQUEST).build();
-        }
-        
-        try{
-            operador.crearReserva(reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), dni, hotel);
-        }catch(ReservaErrorDatos | UsuarioNoEncontrado | HotelErrorBloquear | HotelNoEncontrado | ReservaNoPosible | HotelErrorActualizar e){
+    public Response crearReserva(Reserva reserva) {
+
+        try {
+            operador.crearReserva(reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), reserva.getUsuario().getDni(), reserva.getHotel().getNombre());
+        } catch (ReservaErrorDatos | UsuarioNoEncontrado | HotelErrorBloquear | HotelNoEncontrado | ReservaNoPosible | HotelErrorActualizar e) {
             return Response.status(Status.NOT_ACCEPTABLE).build();
         }
         return Response.created(URI.create("")).build();
     }
-    
+
     @DELETE
     @Path("/{id}")
     //@Consumes("application/json")
-    public Response eliminarReserva (@PathParam("id") int id){
+    public Response eliminarReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
-        if(reserva == null){
+        if (reserva == null) {
             return Response.status(Status.NOT_FOUND).build();
-        }else{
-            try{
+        } else {
+            try {
                 operador.eliminarReserva(id);
-            }catch (HotelErrorActualizar | ReservaNoEncontrada e){
+            } catch (HotelErrorActualizar | ReservaNoEncontrada e) {
                 return Response.status(Status.NOT_ACCEPTABLE).build();
             }
             return Response.status(Status.ACCEPTED).build();
         }
     }
-    
+
     @POST
     @Path("/{id}")
     @Consumes("application/json")
-    public Response modificarReserva (@PathParam("id") int id, Reserva reserva, @QueryParam("dni") String dni, @QueryParam("hotel") String hotel){
-        if (reserva == null){
+    public Response modificarReserva(@PathParam("id") int id, Reserva reserva) {
+        if (reserva == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }
-        
-        if(operador.obtenerReserva(id) == null){
+
+        if (operador.obtenerReserva(id) == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        try{
-        operador.modificarReserva(id, reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), dni, hotel);
-        }catch(ReservaErrorActualizar e){
+        try {
+            operador.modificarReserva(id, reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), reserva.getUsuario().getDni(), reserva.getHotel().getNombre());
+        } catch (ReservaErrorActualizar e) {
             return Response.status(Status.NOT_ACCEPTABLE).build();
         }
         return Response.status(Status.ACCEPTED).build();
