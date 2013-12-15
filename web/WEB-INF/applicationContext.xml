@@ -88,6 +88,14 @@
     
     <!--Seguridad-->
     <security:global-method-security secured-annotations="enabled" />
+    <!--Desde DB-->
+    <!--<security:jdbc-user-service id="proveedorUsuarios" data-source-ref="dataSource" />-->
+<!--    <jdbc-user-service id="proveedorUsuarios"
+                           data-source-ref="dataSource"
+                           user-by-username-query="select nombre, clave, true from usuarios where nombre=?"
+                           authorities-by-username-query="select nombre, rol from roles where nombre=?" />-->
+
+    <!--Desde lista de usuarios-->
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider user-service-ref="proveedorUsuarios"/>
     </security:authentication-manager>
