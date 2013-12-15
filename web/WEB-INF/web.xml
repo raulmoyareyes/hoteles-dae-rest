@@ -10,6 +10,7 @@
         <param-value>/WEB-INF/applicationContext.xml</param-value>
     </context-param>
 
+    <!-- Rest -->
     <servlet>
         <servlet-name>SpringApplication</servlet-name>
         <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
@@ -22,16 +23,28 @@
             <param-value>true</param-value>
         </init-param>
 
-        <!--<load-on-startup>1</load-on-startup>-->
     </servlet>
     <servlet-mapping>
         <servlet-name>SpringApplication</servlet-name>
         <url-pattern>/recursos/*</url-pattern>
     </servlet-mapping>
     
+    <!-- Página de bienvenida -->
     <welcome-file-list>
         <welcome-file>redirect.jsp</welcome-file>
     </welcome-file-list>
 
+    <!-- Configurar Spring Security -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>
+            org.springframework.web.filter.DelegatingFilterProxy
+        </filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/recursos/*</url-pattern>
+    </filter-mapping>
 
 </web-app>

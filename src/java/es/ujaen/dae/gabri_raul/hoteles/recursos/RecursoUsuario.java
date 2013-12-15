@@ -22,6 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,6 +40,7 @@ public class RecursoUsuario {
     @GET
     @Path("/{dni}")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public Response obtenerUsuario(@PathParam("dni") String dni) {
         Usuario usuario = operador.obtenerUsuario(dni);
         if (usuario != null) {
@@ -51,6 +53,7 @@ public class RecursoUsuario {
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public List<Usuario> listaUsuarios() {
         return new ArrayList(operador.listaUsuarios().values());
     }
@@ -58,6 +61,7 @@ public class RecursoUsuario {
     @PUT
     @Path("/{dni}")
     @Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response altaUsuario(@PathParam("dni") String dni, Usuario usuario) {
         if (usuario == null) {
             return Response.status(Status.BAD_REQUEST).build();
@@ -77,6 +81,7 @@ public class RecursoUsuario {
     @DELETE
     @Path("/{dni}")
     //@Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response bajaUsuario(@PathParam("dni") String dni) {
         Usuario usuario = operador.obtenerUsuario(dni);
         if (usuario == null) {
@@ -94,6 +99,7 @@ public class RecursoUsuario {
     @POST
     @Path("/{dni}")
     @Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response modificarUsuario(@PathParam("dni") String dni, Usuario usuario) {
         if (usuario == null) {
             return Response.status(Status.BAD_REQUEST).build();

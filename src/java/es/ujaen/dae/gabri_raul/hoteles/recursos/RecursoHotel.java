@@ -24,6 +24,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,6 +45,7 @@ public class RecursoHotel {
     @GET
     @Path("/{nombre}")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public Response obtenerHotel(@PathParam("nombre") String nombre) {
         Hotel hotel = operador.obtenerHotel(nombre);
         if (hotel != null) {
@@ -56,6 +58,7 @@ public class RecursoHotel {
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public Response listaHoteles(@QueryParam("nombre") String nombre) {
         if (nombre == null) {
             return Response.ok(administrador.listaHoteles()).build();
@@ -72,6 +75,7 @@ public class RecursoHotel {
     @PUT
     @Path("/{nombre}")
     @Consumes("application/json")
+    @Secured("ROLE_ADMIN")
     public Response altaHotel(@PathParam("nombre") String nombre, Hotel hotel) {
         if (hotel == null) {
             return Response.status(Status.BAD_REQUEST).build();
@@ -91,6 +95,7 @@ public class RecursoHotel {
     @DELETE
     @Path("/{nombre}")
     //@Consumes("application/json")
+    @Secured("ROLE_ADMIN")
     public Response bajaHotel(@PathParam("nombre") String nombre) {
         Hotel hotel = administrador.obtenerHotel(nombre);
         if (hotel == null) {
@@ -108,6 +113,7 @@ public class RecursoHotel {
     @POST
     @Path("/{nombre}")
     @Consumes("application/json")
+    @Secured("ROLE_ADMIN")
     public Response modificarHotel(@PathParam("nombre") String nombre, Hotel hotel) {
         if (hotel == null) {
             return Response.status(Status.BAD_REQUEST).build();
@@ -127,6 +133,7 @@ public class RecursoHotel {
     @GET
     @Path("/busqueda")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public List<Hotel> consultaNombreHotel(@QueryParam("nombre") String nombre) {
         return new ArrayList(operador.consultaNombreHotel(nombre).values());
     }

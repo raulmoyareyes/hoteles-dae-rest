@@ -26,10 +26,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,6 +47,7 @@ public class RecursoReservas {
     @GET
     @Path("/{id}")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public Response obtenerReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
         if (reserva != null) {
@@ -59,6 +60,7 @@ public class RecursoReservas {
     @GET
     @Path("")
     @Produces("application/json; charset=utf-8")
+    @Secured("ROLE_OPERADOR")
     public List<Reserva> listadoReservas() {
         return new ArrayList(operador.listadoReservas().values());
     }
@@ -66,6 +68,7 @@ public class RecursoReservas {
     @PUT
     @Path("")
     @Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response crearReserva(Reserva reserva) {
 
         try {
@@ -79,6 +82,7 @@ public class RecursoReservas {
     @DELETE
     @Path("/{id}")
     //@Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response eliminarReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
         if (reserva == null) {
@@ -96,6 +100,7 @@ public class RecursoReservas {
     @POST
     @Path("/{id}")
     @Consumes("application/json")
+    @Secured("ROLE_OPERADOR")
     public Response modificarReserva(@PathParam("id") int id, Reserva reserva) {
         if (reserva == null) {
             return Response.status(Status.BAD_REQUEST).build();
