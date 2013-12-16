@@ -103,8 +103,8 @@
         <security:user name="11111111A" password="123456" authorities="ROLE_OPERADOR"/>
         <security:user name="admin" password="admin" authorities="ROLE_OPERADOR, ROLE_ADMIN"/>
     </security:user-service>
-
-    <security:http>
+    <!--Sin crear sesiones tengo que mandar siempre los datos-->
+    <security:http create-session="stateless">
         <security:http-basic/>
     </security:http>
 
