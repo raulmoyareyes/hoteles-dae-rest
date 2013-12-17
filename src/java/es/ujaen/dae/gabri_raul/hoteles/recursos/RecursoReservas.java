@@ -26,10 +26,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,51 +47,52 @@ public class RecursoReservas {
     @GET
     @Path("/{id}")
     @Produces("application/json; charset=utf-8")
-    @Secured("ROLE_OPERADOR")
     public Response obtenerReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
-        if (reserva != null) {
-            return Response.ok(reserva).build();
-        } else {
-            return Response.status(Status.NOT_FOUND).build();
+        if (reserva == null) {
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Reserva no encontrada.").build()
+            );
         }
+        return Response.ok(reserva).build();
     }
 
     @GET
-    @Path("")
     @Produces("application/json; charset=utf-8")
-    @Secured("ROLE_OPERADOR")
     public List<Reserva> listadoReservas() {
         return new ArrayList(operador.listadoReservas().values());
     }
 
     @PUT
-    @Path("")
     @Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response crearReserva(Reserva reserva) {
 
         try {
             operador.crearReserva(reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), reserva.getUsuario().getDni(), reserva.getHotel().getNombre());
         } catch (ReservaErrorDatos | UsuarioNoEncontrado | HotelErrorBloquear | HotelNoEncontrado | ReservaNoPosible | HotelErrorActualizar e) {
-            return Response.status(Status.NOT_ACCEPTABLE).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_ACCEPTABLE).entity("Error al dar de alta la reserva.").build()
+            );
         }
-        return Response.created(URI.create("")).build();
+        return Response.status(Status.ACCEPTED).build();
     }
 
     @DELETE
     @Path("/{id}")
     //@Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response eliminarReserva(@PathParam("id") int id) {
         Reserva reserva = operador.obtenerReserva(id);
         if (reserva == null) {
-            return Response.status(Status.NOT_FOUND).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Reserva no encontrada.").build()
+            );
         } else {
             try {
                 operador.eliminarReserva(id);
             } catch (HotelErrorActualizar | ReservaNoEncontrada e) {
-                return Response.status(Status.NOT_ACCEPTABLE).build();
+                throw new WebApplicationException(
+                        Response.status(Status.NOT_ACCEPTABLE).entity("Error al eliminar la reserva.").build()
+                );
             }
             return Response.status(Status.ACCEPTED).build();
         }
@@ -100,19 +101,24 @@ public class RecursoReservas {
     @POST
     @Path("/{id}")
     @Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response modificarReserva(@PathParam("id") int id, Reserva reserva) {
         if (reserva == null) {
-            return Response.status(Status.BAD_REQUEST).build();
+            throw new WebApplicationException(
+                    Response.status(Status.BAD_REQUEST).entity("Falta el objeto reserva.").build()
+            );
         }
 
         if (operador.obtenerReserva(id) == null) {
-            return Response.status(Status.NOT_FOUND).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Reserva no encontrada.").build()
+            );
         }
         try {
             operador.modificarReserva(id, reserva.getFechaEntrada(), reserva.getFechaSalida(), reserva.getSimples(), reserva.getDobles(), reserva.getTriples(), reserva.getUsuario().getDni(), reserva.getHotel().getNombre());
         } catch (ReservaErrorActualizar e) {
-            return Response.status(Status.NOT_ACCEPTABLE).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_ACCEPTABLE).entity("Error al actualizar la reserva.").build()
+            );
         }
         return Response.status(Status.ACCEPTED).build();
     }

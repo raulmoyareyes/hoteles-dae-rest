@@ -8,7 +8,6 @@ import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorEliminar;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioErrorPersistir;
 import es.ujaen.dae.gabri_raul.hoteles.excepciones.UsuarioNoEncontrado;
 import es.ujaen.dae.gabri_raul.hoteles.modelos.Usuario;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
@@ -19,10 +18,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,20 +39,18 @@ public class RecursoUsuario {
     @GET
     @Path("/{dni}")
     @Produces("application/json; charset=utf-8")
-    @Secured("ROLE_OPERADOR")
     public Response obtenerUsuario(@PathParam("dni") String dni) {
         Usuario usuario = operador.obtenerUsuario(dni);
-        if (usuario != null) {
-            return Response.ok(usuario).build();
-        } else {
-            return Response.status(Status.NOT_FOUND).build();
+        if (usuario == null) {
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Usuario no encontrado.").build()
+            );
         }
+        return Response.ok(usuario).build();
     }
 
     @GET
-    @Path("")
     @Produces("application/json; charset=utf-8")
-    @Secured("ROLE_OPERADOR")
     public List<Usuario> listaUsuarios() {
         return new ArrayList(operador.listaUsuarios().values());
     }
@@ -61,36 +58,44 @@ public class RecursoUsuario {
     @PUT
     @Path("/{dni}")
     @Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response altaUsuario(@PathParam("dni") String dni, Usuario usuario) {
         if (usuario == null) {
-            return Response.status(Status.BAD_REQUEST).build();
+            throw new WebApplicationException(
+                    Response.status(Status.BAD_REQUEST).entity("Falta el objeto usuario.").build()
+            );
         }
 
         if (operador.obtenerUsuario(dni) != null) {
-            return Response.status(Status.CONFLICT).build();
+            throw new WebApplicationException(
+                    Response.status(Status.CONFLICT).entity("Usuario existente.").build()
+            );
         }
         try {
             operador.altaUsuario(usuario.getNombre(), usuario.getDireccion(), usuario.getDni());
         } catch (UsuarioErrorDatos | UsuarioErrorPersistir e) {
-            return Response.status(Status.NOT_ACCEPTABLE).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_ACCEPTABLE).entity("Error al dar de alta el usuario.").build()
+            );
         }
-        return Response.created(URI.create("")).build();
+        return Response.status(Status.ACCEPTED).build();
     }
 
     @DELETE
     @Path("/{dni}")
     //@Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response bajaUsuario(@PathParam("dni") String dni) {
         Usuario usuario = operador.obtenerUsuario(dni);
         if (usuario == null) {
-            return Response.status(Status.NOT_FOUND).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Usuario no encontrado.").build()
+            );
         } else {
             try {
                 operador.bajaUsuario(dni);
             } catch (UsuarioErrorEliminar | UsuarioNoEncontrado | ReservaErrorCambiarUsuario e) {
-                return Response.status(Status.NOT_ACCEPTABLE).build();
+                throw new WebApplicationException(
+                        Response.status(Status.NOT_ACCEPTABLE).entity("Error al dar de baja el usuario.").build()
+                );
             }
             return Response.status(Status.ACCEPTED).build();
         }
@@ -99,19 +104,22 @@ public class RecursoUsuario {
     @POST
     @Path("/{dni}")
     @Consumes("application/json")
-    @Secured("ROLE_OPERADOR")
     public Response modificarUsuario(@PathParam("dni") String dni, Usuario usuario) {
         if (usuario == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
         if (operador.obtenerUsuario(dni) == null) {
-            return Response.status(Status.NOT_FOUND).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_FOUND).entity("Usuario no encontrado.").build()
+            );
         }
         try {
             operador.modificarUsuario(usuario.getNombre(), usuario.getDni(), usuario.getDireccion());
         } catch (UsuarioErrorActualizar e) {
-            return Response.status(Status.NOT_ACCEPTABLE).build();
+            throw new WebApplicationException(
+                    Response.status(Status.NOT_ACCEPTABLE).entity("Error al actualizar el usuario.").build()
+            );
         }
         return Response.status(Status.ACCEPTED).build();
     }

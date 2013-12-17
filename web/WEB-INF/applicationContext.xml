@@ -89,15 +89,16 @@
     <!--Seguridad-->
     <security:global-method-security secured-annotations="enabled" />
     <!--Desde DB-->
-    <!--<security:jdbc-user-service id="proveedorUsuarios" data-source-ref="dataSource" />-->
-<!--    <jdbc-user-service id="proveedorUsuarios"
+    <!--<security:jdbc-user-service id="proveedorDB" data-source-ref="dataSource" />-->
+<!--    <security:jdbc-user-service id="proveedorDB"
                            data-source-ref="dataSource"
-                           user-by-username-query="select nombre, clave, true from usuarios where nombre=?"
-                           authorities-by-username-query="select nombre, rol from roles where nombre=?" />-->
+                           user-by-username-query="select cif, '123456', true from Operadores where cif=?;"
+                           authorities-by-username-query="select 'ROLE_OPERADOR' from Operadores where cif=?;" />-->
 
     <!--Desde lista de usuarios-->
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider user-service-ref="proveedorUsuarios"/>
+        <!--<security:authentication-provider user-service-ref="proveedorDB"/>-->
     </security:authentication-manager>
     <security:user-service id="proveedorUsuarios">
         <security:user name="11111111A" password="123456" authorities="ROLE_OPERADOR"/>
@@ -106,6 +107,15 @@
     <!--Sin crear sesiones tengo que mandar siempre los datos-->
     <security:http create-session="stateless">
         <security:http-basic/>
+        
+        <security:intercept-url pattern="/recursos/usuarios*" access="ROLE_OPERADOR" />
+        <security:intercept-url pattern="/recursos/reservas*" access="ROLE_OPERADOR" />
+        <security:intercept-url pattern="/recursos/busqueda*" access="ROLE_OPERADOR" />
+        <security:intercept-url pattern="/recursos/hoteles*" method="GET" access="ROLE_OPERADOR" />
+        <security:intercept-url pattern="/recursos/hoteles*" method="PUT" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/recursos/hoteles*" method="DELETE" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/recursos/hoteles*" method="POST" access="ROLE_ADMIN" />
+
     </security:http>
 
 </beans>

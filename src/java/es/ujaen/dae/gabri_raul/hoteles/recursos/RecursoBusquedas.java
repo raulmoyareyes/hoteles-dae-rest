@@ -23,7 +23,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,7 +30,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Raúl & Gabri
  */
-@Path("/{ciudad}")
+@Path("/busqueda")
 @Component(value = "recursoBusquedas")
 public class RecursoBusquedas {
 
@@ -39,9 +38,8 @@ public class RecursoBusquedas {
     BeanOperador operador;
 
     @GET
-    @Path("/hoteles")
+    @Path("/{ciudad}/hoteles")
     @Produces("application/json; charset=utf-8")
-    @Secured("ROLE_OPERADOR")
     public List<Hotel> consultaCiudad(@PathParam("ciudad") String ciudad, @QueryParam("entrada") String entrada, @QueryParam("salida") String salida) {
         if (entrada == null || salida == null) {
             LocalidadesCercanasService localidadesWS = new LocalidadesCercanasService();

@@ -7,12 +7,13 @@ package es.ujaen.dae.gabri_raul.hoteles.recursos;
 
 import es.ujaen.dae.gabri_raul.hoteles.beans.BeanOperador;
 import es.ujaen.dae.gabri_raul.hoteles.modelos.Operador;
-import java.security.Principal;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,38 +35,38 @@ public class RecursoLogin {
 
     @Autowired
     BeanOperador operador;
-    
+
     @Autowired
     AuthenticationManager authenticationManager;
 
     @GET
-    @Path("")
     @Consumes("application/json")
     @Produces("application/json; charset=utf-8")
     public Response login(@QueryParam("usuario") String usuario, @QueryParam("pass") String pass) {
 
-        try {
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(usuario, pass);
-            Authentication authentication = authenticationManager.authenticate(authRequest);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException ex) {
-            // Error de autenticación
-        }
-
+//        try {
+//            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(usuario, pass);
+//            Authentication authentication = authenticationManager.authenticate(authRequest);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//        } catch (BadCredentialsException ex) {
+//            // Error de autenticación
+//        }
         if (usuario == null) {
-            return Response.status(Status.BAD_REQUEST).build();
+            throw new WebApplicationException(
+                    Response.status(Status.BAD_REQUEST).entity("Faltan parámetros.").build()
+            );
         } else {
             Operador op = operador.login(usuario, null);
             if (op == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            } else {
-                return Response.ok(op).build();
+                throw new WebApplicationException(
+                        Response.status(Status.NOT_FOUND).entity("Usuario no encontrado.").build()
+                );
             }
+            return Response.ok(op).build();
         }
     }
-    
-    @GET
-    @Path("/out")
+
+    @DELETE
     @Consumes("application/json")
     @Produces("application/json; charset=utf-8")
     public Response logout() {
