@@ -1,4 +1,4 @@
 Hoteles-DAE-REST
 ================
 
-Rest
+Aplicación para hoteles utilizando RESTful en Java.
